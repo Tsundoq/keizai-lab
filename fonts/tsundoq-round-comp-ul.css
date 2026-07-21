@@ -1,0 +1,12 @@
+/*!
+ * Tsundoq Round Comp UL — web subset for okome-drawit.html
+ * Based on LINE Seed JP, Copyright 2022 LY Corporation.
+ * Licensed under the SIL Open Font License, Version 1.1.
+ */
+@font-face {
+  font-family: "Tsundoq Round Comp";
+  src: url("./tsundoq-round-comp-ul-subset.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 100;
+  font-display: swap;
+}
