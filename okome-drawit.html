@@ -4,57 +4,165 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>米の値段、描いてみて｜触れる経済 #01</title>
+<meta name="description" content="50年ほぼ動かなかった日本の米の値段は、この2年でどうなったか。指で予想を描いて、現実と答え合わせ。">
+<meta property="og:title" content="米の値段、描いてみて。──この50年。">
+<meta property="og:description" content="50年ほぼ動かなかった米の値段は、この2年でどうなったか。指で予想を描いて、現実と答え合わせ。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://tsundoq.github.io/keizai-lab/okome-drawit.html">
+<meta name="twitter:card" content="summary">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@600;800&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Kiwi+Maru:wght@400;500&display=swap" rel="stylesheet">
 <style>
+  /* ============================================================
+     NB定数（neobrutalism-ui / cream）— 直値は書かず、この変数を経由
+     ============================================================ */
   :root{
-    --kome:#F7F6F2;   /* 炊飯の白 */
-    --sumi:#24262B;   /* 墨 */
-    --ai:#274A78;     /* 藍 = あなたの予想 */
-    --shu:#C73E3A;    /* 朱 = 現実 */
-    --hai:#A6A69E;    /* 灰 = 罫線・注釈 */
+    --bg:#F5ECE7;
+    --fg:#000000;
+    --card:#FFFFFF;
+    --primary:#FFDB33;
+    --primary-hover:#FFCC00;
+    --secondary:#000000;
+    --secondary-fg:#FFFFFF;
+    --muted:#D5D5D5;
+    --muted-fg:#5A5A5A;
+    --accent:#FAE583;
+    --destructive:#E63946;   /* 現実 */
+    --border:#000000;
+    --guess:#FF30CD;         /* NB.themes.cream.chart[4] = あなたの予想 */
+    /* NB.shadow */
+    --sh-xs:1px 1px 0 0 var(--border);
+    --sh-sm:2px 2px 0 0 var(--border);
+    --sh-md:3px 3px 0 0 var(--border);
+    --sh-lg:4px 4px 0 0 var(--border);
+    --sh-xl:6px 6px 0 0 var(--border);
+    /* font */
+    --head:'Dela Gothic One','Hiragino Kaku Gothic ProN','Yu Gothic',sans-serif;
+    --body:'Kiwi Maru','Hiragino Kaku Gothic ProN','Yu Gothic',sans-serif;
   }
   *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
-  html,body{background:var(--kome);color:var(--sumi);
-    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",system-ui,sans-serif;
-    font-size:15px;line-height:1.8;}
+  html,body{background:var(--bg);color:var(--fg);
+    font-family:var(--body);font-weight:400;
+    font-size:15px;line-height:1.9;}
   .wrap{max-width:560px;margin:0 auto;padding:28px 18px 64px;}
-  .eyebrow{font-size:11px;letter-spacing:.25em;color:var(--hai);margin-bottom:10px;}
-  h1{font-family:"Shippori Mincho","Hiragino Mincho ProN","Yu Mincho",serif;
-     font-weight:800;font-size:clamp(26px,7vw,34px);line-height:1.4;letter-spacing:.04em;}
-  h1 .shu{color:var(--shu);}
-  .lead{margin-top:14px;font-size:14px;color:#4A4C52;}
-  .lead b{color:var(--ai);}
-  .stage{margin-top:22px;background:#FFFFFF;border:1px solid #E4E2DA;border-radius:10px;
-    padding:14px 8px 10px;box-shadow:0 1px 0 #E4E2DA;}
-  .legend{display:flex;gap:16px;font-size:11.5px;color:#4A4C52;padding:0 8px 6px;}
-  .legend span{display:inline-flex;align-items:center;gap:5px;}
-  .key{display:inline-block;width:16px;height:0;border-top:3px solid;}
-  .key.k-sumi{border-color:var(--sumi);}
-  .key.k-ai{border-color:var(--ai);border-top-style:dashed;}
-  .key.k-shu{border-color:var(--shu);}
+
+  /* eyebrow = Badge部品 */
+  .eyebrow{display:inline-block;font-family:var(--head);font-size:11px;
+    letter-spacing:.12em;background:var(--primary);color:var(--fg);
+    border:2px solid var(--border);border-radius:4px;
+    padding:3px 10px;box-shadow:var(--sh-sm);margin-bottom:14px;}
+
+  h1{font-family:var(--head);font-weight:400;
+     font-size:clamp(24px,6.6vw,32px);line-height:1.5;letter-spacing:.01em;}
+  h1 .shu{color:var(--destructive);}
+  .lead{margin-top:16px;font-size:14.5px;color:var(--fg);}
+  .lead b{font-weight:500;background:var(--accent);padding:0 4px;border-radius:2px;}
+
+  /* Card（グラフ台紙） */
+  .stage{margin-top:24px;background:var(--card);
+    border:2px solid var(--border);border-radius:4px;
+    padding:14px 8px 10px;box-shadow:var(--sh-lg);}
+  .legend{display:flex;gap:14px;flex-wrap:wrap;font-size:11.5px;color:var(--fg);padding:0 8px 8px;font-weight:500;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .key{display:inline-block;width:18px;height:0;border-top:4px solid;}
+  .key.k-fg{border-color:var(--fg);}
+  .key.k-guess{border-color:var(--guess);border-top-style:dashed;}
+  .key.k-real{border-color:var(--destructive);}
   #chart{display:block;width:100%;height:auto;touch-action:none;user-select:none;-webkit-user-select:none;}
-  .hint{font-size:12.5px;color:var(--ai);text-align:center;padding:8px 8px 4px;min-height:2.6em;}
-  .btns{display:flex;gap:10px;margin-top:16px;}
-  button{flex:1;border:0;border-radius:8px;padding:14px 10px;font-size:15px;font-weight:700;
-    font-family:inherit;cursor:pointer;transition:opacity .2s;}
-  #reveal{background:var(--shu);color:#fff;}
-  #reveal:disabled{background:#D9D7CF;color:#8B8B84;cursor:default;}
-  #reset{background:transparent;color:var(--ai);border:1.5px solid var(--ai);flex:0 0 30%;}
-  .result{display:none;margin-top:22px;border-top:1px solid #E4E2DA;padding-top:20px;}
+  .hint{font-size:12.5px;color:var(--muted-fg);text-align:center;padding:8px 8px 4px;min-height:2.6em;font-weight:500;}
+
+  /* Button（押下挙動込み） */
+  .btns{display:flex;gap:12px;margin-top:22px;}
+  button{flex:1;font-family:var(--head);font-weight:400;font-size:14px;
+    padding:14px 10px;cursor:pointer;color:var(--fg);
+    border:2px solid var(--border);border-radius:4px;
+    box-shadow:var(--sh-lg);
+    transition:transform .2s, box-shadow .2s, background-color .2s;}
+  button:hover:not(:disabled){transform:translateY(1px);box-shadow:var(--sh-md);}
+  button:active:not(:disabled){transform:translate(1px,2px);box-shadow:none;}
+  button:focus-visible{outline:2px dashed var(--border);outline-offset:3px;}
+  #reveal{background:var(--primary);}
+  #reveal:hover:not(:disabled){background:var(--primary-hover);}
+  #reveal:disabled{background:var(--muted);color:var(--muted-fg);cursor:default;box-shadow:none;transform:none;}
+  #reset{background:var(--card);flex:0 0 32%;}
+
+  /* 結果 */
+  .result{display:none;margin-top:26px;padding-top:24px;border-top:2px dashed var(--border);}
   .result.show{display:block;animation:fadein .5s ease;}
   @keyframes fadein{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
-  .score-label{font-size:12px;letter-spacing:.15em;color:var(--hai);}
-  .score{font-family:"Shippori Mincho","Hiragino Mincho ProN",serif;font-weight:800;
-    font-size:44px;color:var(--shu);line-height:1.3;}
-  .score small{font-size:16px;color:var(--sumi);font-family:inherit;}
-  .verdict{font-size:15px;font-weight:700;margin-top:2px;}
-  .fact{margin-top:14px;background:#FFFFFF;border-left:3px solid var(--shu);
-    padding:12px 14px;font-size:13.5px;}
-  #share{margin-top:16px;width:100%;background:var(--ai);color:#fff;}
-  .src{margin-top:26px;font-size:11px;color:var(--hai);line-height:1.7;}
+
+  .score-cards{display:flex;gap:12px;}
+  .score-card{flex:1;background:var(--card);
+    border:2px solid var(--border);border-radius:4px;
+    padding:14px 10px 12px;text-align:center;box-shadow:var(--sh-md);}
+  .score-label{font-family:var(--head);font-size:10px;letter-spacing:.1em;color:var(--muted-fg);}
+  .score{font-family:var(--head);font-weight:400;
+    font-size:34px;color:var(--destructive);line-height:1.25;margin-top:6px;}
+  .score small{font-family:var(--body);font-weight:500;font-size:13px;color:var(--fg);}
+  .score .vs{font-family:var(--body);font-size:15px;color:var(--muted-fg);margin:0 4px;font-weight:500;}
+  .score .you{color:var(--guess);}
+  .verdict{font-family:var(--body);font-weight:500;font-size:15px;margin-top:14px;
+    background:var(--accent);border:2px solid var(--border);border-radius:4px;
+    padding:10px 12px;box-shadow:var(--sh-sm);}
+  .fact{margin-top:16px;background:var(--card);
+    border:2px solid var(--border);border-radius:4px;
+    padding:12px 14px;font-size:13.5px;box-shadow:var(--sh-md);}
+  .fact b{font-weight:500;background:var(--accent);padding:0 3px;border-radius:2px;}
+  .fact b.shu{background:none;color:var(--destructive);font-family:var(--head);font-weight:400;font-size:14.5px;}
+
+  /* 換算 */
+  .kansan{margin-top:14px;background:var(--card);
+    border:2px solid var(--border);border-radius:4px;
+    padding:12px 14px;font-size:13px;box-shadow:var(--sh-md);}
+  .kansan .row{display:flex;justify-content:space-between;align-items:baseline;
+    padding:6px 0;border-bottom:1px dashed var(--muted);}
+  .kansan .row:last-of-type{border-bottom:0;}
+  .kansan .num{font-family:var(--head);font-weight:400;font-size:18px;}
+  .kansan .num.shu{color:var(--destructive);}
+  .kansan .note{font-size:11px;color:var(--muted-fg);margin-top:8px;line-height:1.7;}
+
+  /* 解説 */
+  .yomu{margin-top:30px;}
+  .yomu-title{font-family:var(--head);font-weight:400;
+    font-size:18px;letter-spacing:.03em;
+    background:var(--fg);color:var(--card);
+    display:inline-block;padding:4px 12px;border:2px solid var(--border);border-radius:4px;
+    box-shadow:var(--sh-md);margin-bottom:10px;}
+  details{border:2px solid var(--border);border-radius:4px;background:var(--card);
+    margin-top:10px;box-shadow:var(--sh-md);}
+  summary{list-style:none;cursor:pointer;padding:12px 14px;font-family:var(--head);font-weight:400;
+    font-size:14px;display:flex;align-items:center;justify-content:space-between;gap:8px;}
+  summary::-webkit-details-marker{display:none;}
+  summary::after{content:"＋";font-family:var(--head);color:var(--destructive);flex:0 0 auto;font-size:16px;}
+  details[open] summary::after{content:"−";}
+  details[open] summary{border-bottom:2px solid var(--border);}
+  .yomu-body{padding:12px 14px 14px;font-size:13.5px;color:var(--fg);line-height:1.9;}
+  .yomu-body p{margin-bottom:10px;}
+  .yomu-body p:last-child{margin-bottom:0;}
+  .yomu-body b{font-weight:500;background:var(--accent);padding:0 3px;border-radius:2px;}
+
+  .nenpyo{margin-top:2px;font-size:12.5px;}
+  .nenpyo li{list-style:none;display:flex;gap:10px;align-items:flex-start;padding:6px 0;
+    border-bottom:1px dashed var(--muted);}
+  .nenpyo li:last-child{border-bottom:0;}
+  .nenpyo .yr{flex:0 0 auto;min-width:3.6em;text-align:center;
+    font-family:var(--head);font-weight:400;font-size:11px;
+    background:var(--primary);color:var(--fg);
+    border:2px solid var(--border);border-radius:4px;
+    padding:2px 6px;box-shadow:var(--sh-xs);}
+  .nenpyo .txt{padding-top:2px;}
+
+  /* シェア */
+  .share-row{display:flex;gap:12px;margin-top:22px;}
+  #shareX{background:var(--secondary);color:var(--secondary-fg);}
+  #shareCopy{background:var(--card);color:var(--fg);flex:0 0 36%;}
+
+  .src{margin-top:28px;font-size:11px;color:var(--muted-fg);line-height:1.8;}
+
   @media (prefers-reduced-motion: reduce){
     .result.show{animation:none;}
+    button{transition:none;}
   }
 </style>
 </head>
@@ -68,9 +176,9 @@
 
   <div class="stage">
     <div class="legend">
-      <span><span class="key k-sumi"></span>実際（〜2015）</span>
-      <span><span class="key k-ai"></span>あなたの予想</span>
-      <span><span class="key k-shu"></span>現実</span>
+      <span><span class="key k-fg"></span>実際（〜2015）</span>
+      <span><span class="key k-guess"></span>あなたの予想</span>
+      <span><span class="key k-real"></span>現実</span>
     </div>
     <svg id="chart" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg" aria-label="米の消費者物価指数のグラフ。2016年以降を指で描いて予想する"></svg>
     <p class="hint" id="hint">▶ 点線の右側を、左から右へなぞってください</p>
@@ -82,30 +190,102 @@
   </div>
 
   <div class="result" id="result">
-    <p class="score-label">あなたの物価感覚のズレ</p>
-    <p class="score" id="scoreNum">--<small> ポイント／年</small></p>
+    <div class="score-cards">
+      <div class="score-card">
+        <p class="score-label">予想のズレ（平均）</p>
+        <p class="score"><span id="scoreNum">--</span><small> pt/年</small></p>
+      </div>
+      <div class="score-card">
+        <p class="score-label">今年の米価 予想と現実</p>
+        <p class="score"><span class="you" id="yourLast">--</span><span class="vs">→</span><span id="realLast">212.6</span></p>
+      </div>
+    </div>
     <p class="verdict" id="verdict"></p>
     <div class="fact">
       実は<b>2024年1月の米の値段（指数100.1）は、43年前の1981年（99.1）とほぼ同じ</b>でした。
-      半世紀ほぼ動かなかった米価は、そこからわずか2年で<b style="color:var(--shu)">212.6</b>——約2倍になりました。
+      半世紀ほぼ動かなかった米価は、そこからわずか2年で<b class="shu">212.6</b>——約2倍になりました。
       1994年の「平成の米騒動」（135.3）すら、いまや遠く下に見える高さです。
     </div>
-    <button id="share">結果をコピーしてXでシェア</button>
+
+    <div class="kansan">
+      <div class="row"><span>2020年ごろのスーパー（5kg袋のめやす）</span><span class="num">約2,100円</span></div>
+      <div class="row"><span>いま（指数212.6を同じ物差しで換算）</span><span class="num shu">約4,500円</span></div>
+      <p class="note">※ 指数（2020年=100）を当時の平均的な小売価格に当てはめたざっくり換算です。銘柄や店によって実際の価格は異なります。</p>
+    </div>
+
+    <div class="yomu">
+      <p class="yomu-title">読む：なぜ、こう動いたのか</p>
+
+      <details>
+        <summary>なぜ50年、ほぼ動かなかったのか</summary>
+        <div class="yomu-body">
+          <p>米は長いあいだ、日本でいちばん<b>「国が値段に関わってきた食べもの」</b>でした。
+          戦時中に始まった食糧管理制度のもとで、政府が米を買い上げ、売り渡す仕組みが続き、
+          価格は市場ではなく制度の中で決まっていました。</p>
+          <p>さらに1970年代からは、作りすぎを防ぐために田んぼの面積を絞る<b>「減反（生産調整）」</b>が本格化。
+          供給を意図的に抑えてバランスを取ることで、価格は大きく上がりも下がりもしない状態が長く続きました。</p>
+          <p>1995年に食糧管理法が廃止され、2018年には国主導の減反も終わりましたが、
+          需要の減少（食の多様化で米を食べる量自体が減少）と供給の調整が釣り合い、
+          値段は<b>むしろ緩やかな下り坂</b>。2015年の指数89.9は、1978年より低い水準でした。</p>
+        </div>
+      </details>
+
+      <details>
+        <summary>なぜ2年で、約2倍になったのか</summary>
+        <div class="yomu-body">
+          <p>きっかけは<b>2023年夏の記録的な猛暑</b>とされます。暑さで米の品質が落ち、
+          流通に回る量が細ったところに、訪日客の増加や外食の回復で需要が戻り、
+          需給が一気に締まりました。</p>
+          <p>2024年夏には店頭から米が消える<b>「令和の米騒動」</b>が起き、新米が出ても価格は高止まり。
+          2025年には政府が備蓄米の放出に踏み切りましたが、
+          一時的に落ち着いてもまた上がる、という展開が続きました。</p>
+          <p>ポイントは、<b>長年「供給を絞って安定させる」方向に最適化されてきた仕組み</b>は、
+          いざ足りなくなったときに急には増やせない、ということ。
+          田んぼも農家も、1〜2年では戻らないのです。</p>
+        </div>
+      </details>
+
+      <details>
+        <summary>ミニ年表：グラフの山と谷</summary>
+        <div class="yomu-body">
+          <ul class="nenpyo">
+            <li><span class="yr">70s</span><span class="txt">減反（生産調整）が本格化。国が値段を支える時代</span></li>
+            <li><span class="yr">1993</span><span class="txt">記録的な冷夏で大凶作。タイ米などを緊急輸入</span></li>
+            <li><span class="yr">1994</span><span class="txt">「平成の米騒動」。指数135.3まで上昇</span></li>
+            <li><span class="yr">1995</span><span class="txt">食糧管理法が廃止。市場での取引へ</span></li>
+            <li><span class="yr">2018</span><span class="txt">国主導の減反が終了。それでも価格は低空飛行</span></li>
+            <li><span class="yr">2023</span><span class="txt">猛暑で品質低下。ここから需給が締まりはじめる</span></li>
+            <li><span class="yr">2024</span><span class="txt">「令和の米騒動」。店頭で品薄に</span></li>
+            <li><span class="yr">25-26</span><span class="txt">備蓄米放出でも高止まり。指数212.6へ</span></li>
+          </ul>
+        </div>
+      </details>
+    </div>
+
+    <div class="share-row">
+      <button id="shareX">結果をXでシェア</button>
+      <button id="shareCopy">コピー</button>
+    </div>
   </div>
 
   <p class="src">出典：総務省「消費者物価指数」うるち米Ａ・全国・各年1月の指数（2020年＝100）。2026年のみ2月の値。
-  e-Stat APIより取得（加工：OpenGov.jp, CC BY 4.0）。本作は個人制作の教育目的コンテンツです。</p>
+  e-Stat APIより取得（加工：OpenGov.jp, CC BY 4.0）。5kg換算は総務省「小売物価統計調査」の水準を参考にした概算。
+  解説は主要報道・公表資料をもとにした個人制作の教育目的コンテンツです。</p>
 </div>
 
 <script>
 (function(){
   "use strict";
+  // NB色（SVG内でCSS変数を扱えないので同値を直書き）
+  var NBC={fg:"#000000",card:"#FFFFFF",muted:"#D5D5D5",mutedFg:"#5A5A5A",
+           guess:"#FF30CD",real:"#E63946",primary:"#FFDB33"};
+
   // ---- データ（うるち米A・各年1月・2020=100 / 2026は2月値） ----
   var YEARS=[], VALS=[];
   var raw={1975:69.1,1976:79.6,1977:87.7,1978:94.5,1979:94.5,1980:94.6,1981:99.1,1982:104.3,1983:107.9,1984:111.3,1985:114.9,1986:115.3,1987:115.4,1988:114.0,1989:114.1,1990:118.3,1991:118.3,1992:121.6,1993:124.8,1994:135.3,1995:124.6,1996:119.7,1997:121.5,1998:113.6,1999:119.2,2000:112.8,2001:107.2,2002:106.6,2003:105.6,2004:133.7,2005:106.7,2006:104.0,2007:102.7,2008:99.2,2009:101.1,2010:98.1,2011:90.3,2012:98.5,2013:103.6,2014:96.7,2015:89.9,2016:92.3,2017:95.8,2018:99.3,2019:99.3,2020:101.0,2021:98.1,2022:93.8,2023:95.0,2024:100.1,2025:169.4,2026:212.6};
   for(var y=1975;y<=2026;y++){YEARS.push(y);VALS.push(raw[y]);}
-  var SPLIT=YEARS.indexOf(2015);          // ここまで見せる
-  var DRAW_FROM=SPLIT+1, DRAW_TO=YEARS.length-1; // 2016..2026 を描かせる
+  var SPLIT=YEARS.indexOf(2015);
+  var DRAW_FROM=SPLIT+1, DRAW_TO=YEARS.length-1;
 
   // ---- 座標系 ----
   var W=400,H=300,L=40,R=14,T=16,B=30;
@@ -129,33 +309,40 @@
     (parent||svg).appendChild(e);return e;
   }
   function pts(arr){return arr.map(function(p){return p[0].toFixed(1)+","+p[1].toFixed(1);}).join(" ");}
+  var reduceMotion=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  // ---- 背景（罫線・軸・既知の線・注釈） ----
   var guess=new Array(YEARS.length).fill(null);
   var revealed=false;
 
   function drawBase(){
     while(svg.firstChild){svg.removeChild(svg.firstChild);}
     [50,100,150,200,250].forEach(function(v){
-      el("line",{x1:L,y1:Y(v),x2:W-R,y2:Y(v),stroke:"#ECEAE2","stroke-width":1});
-      el("text",{x:L-6,y:Y(v)+4,"text-anchor":"end","font-size":9,fill:"#A6A69E"}).textContent=v;
+      el("line",{x1:L,y1:Y(v),x2:W-R,y2:Y(v),stroke:NBC.muted,"stroke-width":1});
+      el("text",{x:L-6,y:Y(v)+4,"text-anchor":"end","font-size":9,fill:NBC.mutedFg,"font-family":"Kiwi Maru,sans-serif"}).textContent=v;
     });
-    el("text",{x:L-6,y:Y(100)-6,"text-anchor":"end","font-size":8,fill:"#A6A69E"}).textContent="2020年=100";
+    el("text",{x:L-6,y:Y(100)-6,"text-anchor":"end","font-size":8,fill:NBC.mutedFg,"font-family":"Kiwi Maru,sans-serif"}).textContent="2020年=100";
     [1975,1990,2005,2015,2026].forEach(function(yr){
       var i=YEARS.indexOf(yr);
-      el("text",{x:X(i),y:H-10,"text-anchor":"middle","font-size":9,fill:"#A6A69E"}).textContent=yr;
+      el("text",{x:X(i),y:H-10,"text-anchor":"middle","font-size":9,fill:NBC.mutedFg,"font-family":"Kiwi Maru,sans-serif"}).textContent=yr;
     });
-    // 描画エリアの目印（点線の仕切り）
-    el("line",{x1:X(SPLIT),y1:T,x2:X(SPLIT),y2:H-B,stroke:"#C9C7BE","stroke-width":1,"stroke-dasharray":"3 4"});
-    // 既知の線 1975-2015
+    // 描画エリアの仕切り
+    el("line",{x1:X(SPLIT),y1:T,x2:X(SPLIT),y2:H-B,stroke:NBC.mutedFg,"stroke-width":1,"stroke-dasharray":"3 4"});
+    // 既知の線 1975-2015（太めの黒 = NBのforeground）
     var known=[];for(var i=0;i<=SPLIT;i++){known.push([X(i),Y(VALS[i])]);}
-    el("polyline",{points:pts(known),fill:"none",stroke:"#24262B","stroke-width":2,"stroke-linejoin":"round"});
+    el("polyline",{points:pts(known),fill:"none",stroke:NBC.fg,"stroke-width":2.5,"stroke-linejoin":"round","stroke-linecap":"round"});
     // 注釈：平成の米騒動
     var k94=YEARS.indexOf(1994);
-    el("circle",{cx:X(k94),cy:Y(VALS[k94]),r:3,fill:"#24262B"});
-    el("text",{x:X(k94),y:Y(VALS[k94])-8,"text-anchor":"middle","font-size":8.5,fill:"#4A4C52"}).textContent="'94 平成の米騒動";
-    // ユーザー予想線用グループ（後から更新）
-    el("polyline",{id:"guessLine",points:"",fill:"none",stroke:"#274A78","stroke-width":2.5,"stroke-dasharray":"6 4","stroke-linejoin":"round","stroke-linecap":"round"});
+    el("circle",{cx:X(k94),cy:Y(VALS[k94]),r:3,fill:NBC.fg});
+    el("text",{x:X(k94),y:Y(VALS[k94])-8,"text-anchor":"middle","font-size":8.5,fill:NBC.mutedFg,"font-family":"Kiwi Maru,sans-serif"}).textContent="'94 平成の米騒動";
+    // ズレ塗り
+    el("polygon",{id:"diffArea",points:"",fill:NBC.guess,"fill-opacity":0,style:"transition:fill-opacity .8s ease"});
+    // 予想線
+    el("polyline",{id:"guessLine",points:"",fill:"none",stroke:NBC.guess,"stroke-width":3,"stroke-dasharray":"6 4","stroke-linejoin":"round","stroke-linecap":"round"});
+    // ツールチップ（NB風：黒枠+硬い影）
+    var tip=el("g",{id:"tip",visibility:"hidden"});
+    el("rect",{x:-36,y:-32,width:72,height:22,rx:2,fill:NBC.guess,stroke:NBC.fg,"stroke-width":2},tip);
+    el("rect",{x:-34,y:-30,width:72,height:22,rx:2,fill:"none",stroke:NBC.fg,"stroke-width":2,opacity:"0.15"},tip);
+    el("text",{id:"tipText",x:0,y:-16,"text-anchor":"middle","font-size":10,"font-weight":"bold",fill:NBC.fg,"font-family":"Kiwi Maru,sans-serif"},tip).textContent="";
   }
 
   function redrawGuess(){
@@ -174,12 +361,26 @@
     var ok=complete();
     document.getElementById("reveal").disabled=!ok||revealed;
     document.getElementById("hint").textContent=
-      revealed?"朱い線が現実です。":
+      revealed?"赤い線が現実。ピンクの帯があなたの予想とのズレです。":
       ok?"✓ 描けました。「答え合わせ」を押してください":
       "▶ 点線の右側を、左から右へなぞってください";
   }
 
-  // ---- 指描き ----
+  function showTip(i,v){
+    var tip=document.getElementById("tip");
+    if(!tip)return;
+    var tx=Math.max(L+36,Math.min(W-R-36,X(i)));
+    var ty=Math.max(T+34,Y(v));
+    tip.setAttribute("transform","translate("+tx+","+ty+")");
+    tip.setAttribute("visibility","visible");
+    document.getElementById("tipText").textContent=YEARS[i]+"年 "+Math.round(v);
+  }
+  function hideTip(){
+    var tip=document.getElementById("tip");
+    if(tip)tip.setAttribute("visibility","hidden");
+  }
+
+  // 指描き
   var drawing=false,lastI=null;
   function toLocal(ev){
     var r=svg.getBoundingClientRect();
@@ -189,12 +390,13 @@
     var p=toLocal(ev);
     var i=iFromX(p.x), v=vFromY(p.y);
     guess[i]=v;
-    if(lastI!==null&&Math.abs(i-lastI)>1){ // 速いスワイプの隙間を埋める
+    if(lastI!==null&&Math.abs(i-lastI)>1){
       var a=Math.min(i,lastI),b=Math.max(i,lastI);
       var va=guess[a]!==null?guess[a]:v, vb=guess[b]!==null?guess[b]:v;
       for(var j=a+1;j<b;j++){guess[j]=va+(vb-va)*(j-a)/(b-a);}
     }
     lastI=i;
+    showTip(i,v);
     redrawGuess();updateUI();
   }
   svg.addEventListener("pointerdown",function(ev){
@@ -207,54 +409,100 @@
     if(!drawing||revealed)return;
     put(ev);ev.preventDefault();
   });
-  function stop(){drawing=false;lastI=null;}
+  function stop(){drawing=false;lastI=null;hideTip();}
   svg.addEventListener("pointerup",stop);
   svg.addEventListener("pointercancel",stop);
 
-  // ---- 答え合わせ ----
-  var meanDiff=0;
+  // カウントアップ
+  function countUp(elId,target,decimals,dur){
+    var node=document.getElementById(elId);
+    if(reduceMotion){node.textContent=target.toFixed(decimals);return;}
+    var start=null;
+    function step(ts){
+      if(start===null)start=ts;
+      var t=Math.min(1,(ts-start)/dur);
+      var eased=1-Math.pow(1-t,3);
+      node.textContent=(target*eased).toFixed(decimals);
+      if(t<1)requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+
+  // 答え合わせ
+  var meanDiff=0,yourLastVal=0;
   document.getElementById("reveal").addEventListener("click",function(){
     if(!complete()||revealed)return;
     revealed=true;
+    hideTip();
     var actual=[];for(var i=SPLIT;i<=DRAW_TO;i++){actual.push([X(i),Y(VALS[i])]);}
-    var line=el("polyline",{points:pts(actual),fill:"none",stroke:"#C73E3A","stroke-width":3,"stroke-linejoin":"round","stroke-linecap":"round"});
-    var reduce=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if(!reduce&&line.getTotalLength){
+    var line=el("polyline",{points:pts(actual),fill:"none",stroke:NBC.real,"stroke-width":3.5,"stroke-linejoin":"round","stroke-linecap":"round"});
+    if(!reduceMotion&&line.getTotalLength){
       var len=line.getTotalLength();
       line.style.strokeDasharray=len;line.style.strokeDashoffset=len;
       line.style.transition="stroke-dashoffset 1.6s ease-out";
       requestAnimationFrame(function(){requestAnimationFrame(function(){line.style.strokeDashoffset="0";});});
     }
-    var last=YEARS.length-1;
-    el("text",{x:X(last)-2,y:Y(VALS[last])-8,"text-anchor":"end","font-size":11,"font-weight":"bold",fill:"#C73E3A"}).textContent="212.6";
+    var poly=[];
+    for(var a=SPLIT;a<=DRAW_TO;a++){poly.push([X(a),Y(a===SPLIT?VALS[a]:guess[a])]);}
+    for(var b=DRAW_TO;b>=SPLIT;b--){poly.push([X(b),Y(VALS[b])]);}
+    var diffArea=document.getElementById("diffArea");
+    diffArea.setAttribute("points",pts(poly));
+    setTimeout(function(){diffArea.setAttribute("fill-opacity",0.15);},reduceMotion?0:1200);
+    setTimeout(function(){
+      var last=YEARS.length-1;
+      el("text",{x:X(last)-2,y:Y(VALS[last])-8,"text-anchor":"end","font-size":11,"font-weight":"bold",fill:NBC.real,"font-family":"Dela Gothic One,sans-serif"}).textContent="212.6";
+      var k25=YEARS.indexOf(2025);
+      el("circle",{cx:X(k25),cy:Y(VALS[k25]),r:3,fill:NBC.real});
+      el("text",{x:X(k25)-4,y:Y(VALS[k25])+3,"text-anchor":"end","font-size":8.5,fill:NBC.real,"font-family":"Kiwi Maru,sans-serif"}).textContent="'25 令和の米騒動";
+    },reduceMotion?0:1400);
     var sum=0,n=0;
     for(var k=DRAW_FROM;k<=DRAW_TO;k++){sum+=Math.abs(guess[k]-VALS[k]);n++;}
     meanDiff=Math.round(sum/n*10)/10;
-    document.getElementById("scoreNum").innerHTML=meanDiff+"<small> ポイント／年</small>";
+    yourLastVal=Math.round(guess[DRAW_TO]);
+    document.getElementById("yourLast").textContent=yourLastVal;
+    countUp("scoreNum",meanDiff,1,900);
     var v;
     if(meanDiff<15)v="鋭い。あなたは物価をよく見ています。";
     else if(meanDiff<35)v="惜しい。でも最後の2年は、誰の予想も超えました。";
     else v="大ハズレ——安心してください、現実のほうがおかしいのです。";
     document.getElementById("verdict").textContent=v;
-    document.getElementById("result").classList.add("show");
+    var result=document.getElementById("result");
+    result.classList.add("show");
+    setTimeout(function(){
+      result.scrollIntoView({behavior:reduceMotion?"auto":"smooth",block:"nearest"});
+    },reduceMotion?0:300);
     updateUI();
   });
 
-  // ---- やり直し ----
+  // やり直し
   document.getElementById("reset").addEventListener("click",function(){
     guess=new Array(YEARS.length).fill(null);
-    revealed=false;meanDiff=0;
+    revealed=false;meanDiff=0;yourLastVal=0;
     document.getElementById("result").classList.remove("show");
+    document.getElementById("scoreNum").textContent="--";
+    document.getElementById("yourLast").textContent="--";
     drawBase();updateUI();
   });
 
-  // ---- シェア ----
-  document.getElementById("share").addEventListener("click",function(){
-    var text="「米の値段、描いてみて」やってみたら、予想が平均"+meanDiff+"ポイント/年ズレてた。50年動かなかった米価、最後の2年がやばい。 #米の値段描いてみて "+location.href;
+  // シェア
+  function shareText(){
+    return "「米の値段、描いてみて」で今年の米価を"+yourLastVal+"と予想したら、現実は212.6だった。50年ほぼ動かなかった米の値段、最後の2年がやばい。 #米の値段描いてみて";
+  }
+  document.getElementById("shareX").addEventListener("click",function(){
+    var text=shareText();
+    var url=location.href;
+    if(navigator.share){
+      navigator.share({text:text,url:url}).catch(function(){});
+    }else{
+      window.open("https://twitter.com/intent/tweet?text="+encodeURIComponent(text)+"&url="+encodeURIComponent(url),"_blank","noopener");
+    }
+  });
+  document.getElementById("shareCopy").addEventListener("click",function(){
+    var text=shareText()+" "+location.href;
+    var btn=document.getElementById("shareCopy");
     function done(ok){
-      var btn=document.getElementById("share");
-      btn.textContent=ok?"コピーしました。Xに貼り付けてください":"コピーできませんでした（長押しで選択してください）";
-      setTimeout(function(){btn.textContent="結果をコピーしてXでシェア";},2500);
+      btn.textContent=ok?"コピーしました":"コピー不可";
+      setTimeout(function(){btn.textContent="コピー";},2000);
     }
     if(navigator.clipboard&&navigator.clipboard.writeText){
       navigator.clipboard.writeText(text).then(function(){done(true);},function(){done(false);});
