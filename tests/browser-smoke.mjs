@@ -51,7 +51,7 @@ async function checkViewport(name, width, height) {
     await page.locator("#reveal").click();
     if (!(await page.locator("#result").isVisible())) throw new Error("Result did not appear");
     if (!(await page.locator("#reveal").isDisabled())) throw new Error("Reveal did not disable");
-    if (!(await page.locator("#scoreNum").innerText()).match(/\\d/)) throw new Error("Score missing");
+    if (!(await page.locator("#scoreNum").innerText()).match(/\d/)) throw new Error("Score missing");
     await page.screenshot({ path: `${outputs}/${name}-result.png`, fullPage: true });
 
     await page.locator("#reset").click();
@@ -65,7 +65,7 @@ async function checkViewport(name, width, height) {
     if (metrics.width > metrics.viewport + 2) throw new Error(`Horizontal overflow: ${JSON.stringify(metrics)}`);
     if (errors.length) throw new Error(`Browser errors: ${errors.join("; ")}`);
 
-    process.stdout.write(`PASS ${name}: load, draw, reveal, reset, layout, no runtime errors\\n`);
+    process.stdout.write(`PASS ${name}: load, draw, reveal, reset, layout, no runtime errors\n`);
   } catch (e) {
     failures.push(`${name}: ${e?.stack || e}`);
   } finally {
